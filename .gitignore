@@ -28,3 +28,9 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+.phpunit.cache/
+.phpunit.cache
+/.idea/
+/.vscode/
+.DS_Store

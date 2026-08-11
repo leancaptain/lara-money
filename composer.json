@@ -1,0 +1,56 @@
+{
+    "name": "leancaptain/lara-money",
+    "description": "Laravel integration for leancaptain/money.",
+    "keywords": [
+        "money",
+        "currency",
+        "monetary",
+        "finance",
+        "laravel",
+        "eloquent",
+        "cast"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mahmudul Hasan",
+            "email": "mahmudul.bd.90@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "leancaptain/money": "^0.0.3",
+        "illuminate/database": "^13.0",
+        "illuminate/support": "^13.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^5.1",
+        "orchestra/testbench": "^11.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "LeanCaptain\\LaraMoney\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LeanCaptain\\LaraMoney\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LeanCaptain\\LaraMoney\\LaraMoneyServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "pest --compact --bail"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
