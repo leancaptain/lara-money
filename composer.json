@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "^8.4",
-        "leancaptain/money": "^0.0.3",
+        "leancaptain/money": "^0.0.4",
         "illuminate/database": "^13.0",
         "illuminate/support": "^13.0"
     },

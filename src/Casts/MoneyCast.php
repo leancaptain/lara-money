@@ -27,13 +27,9 @@ final readonly class MoneyCast implements CastsAttributes
             return null;
         }
 
-        if ($this->currencyAttribute === null) {
-            return app(MoneyFactory::class)->fromMinor((int) $value);
-        }
-
         return Money::fromMinor(
             (int) $value,
-            $this->resolveCurrency($key, $attributes),
+            $this->expectedCurrency($key, $attributes),
         );
     }
 
@@ -47,9 +43,11 @@ final readonly class MoneyCast implements CastsAttributes
             return null;
         }
 
-        $money = $this->normalizeMoney($key, $value, $attributes);
-
-        return $money->minorAmount();
+        return $this->normalizeMoney(
+            $key,
+            $value,
+            $attributes,
+        )->minorAmount();
     }
 
     /*
@@ -96,44 +94,69 @@ final readonly class MoneyCast implements CastsAttributes
         array $attributes,
     ): MoneyFactory {
         $factory = app(MoneyFactory::class);
+        $currencyAttribute = $this->currencyAttribute($attributes);
 
-        if ($this->currencyAttribute === null) {
+        if ($currencyAttribute === null) {
             return $factory;
         }
 
         return new MoneyFactory(
-            currency: $this->resolveCurrency($key, $attributes),
+            currency: $this->resolveCurrency(
+                $currencyAttribute,
+                $key,
+                $attributes,
+            ),
             roundingMode: $factory->roundingMode(),
         );
-    }
-
-    private function resolveCurrency(
-        string $key,
-        array $attributes,
-    ): CurrencyContract {
-        $currencyCode = $attributes[$this->currencyAttribute] ?? null;
-
-        if (! is_string($currencyCode) || $currencyCode === '') {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Currency attribute [%s] is missing or invalid for money attribute [%s].',
-                    $this->currencyAttribute,
-                    $key,
-                ),
-            );
-        }
-
-        return app(CurrencyResolver::class)->resolve($currencyCode);
     }
 
     private function expectedCurrency(
         string $key,
         array $attributes,
     ): CurrencyContract {
-        if ($this->currencyAttribute === null) {
+        $currencyAttribute = $this->currencyAttribute($attributes);
+
+        if ($currencyAttribute === null) {
             return app(MoneyFactory::class)->currency();
         }
 
-        return $this->resolveCurrency($key, $attributes);
+        return $this->resolveCurrency(
+            $currencyAttribute,
+            $key,
+            $attributes,
+        );
+    }
+
+    private function currencyAttribute(array $attributes): ?string
+    {
+        if ($this->currencyAttribute !== null) {
+            return $this->currencyAttribute;
+        }
+
+        if (array_key_exists('currency', $attributes)) {
+            return 'currency';
+        }
+
+        return null;
+    }
+
+    private function resolveCurrency(
+        string $currencyAttribute,
+        string $key,
+        array $attributes,
+    ): CurrencyContract {
+        $currencyCode = $attributes[$currencyAttribute] ?? null;
+
+        if (! is_string($currencyCode) || $currencyCode === '') {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Currency attribute [%s] is missing or invalid for money attribute [%s].',
+                    $currencyAttribute,
+                    $key,
+                ),
+            );
+        }
+
+        return app(CurrencyResolver::class)->resolve($currencyCode);
     }
 }

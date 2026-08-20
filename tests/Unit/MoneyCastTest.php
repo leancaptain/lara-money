@@ -272,3 +272,19 @@ it('rejects float input', function (): void {
     InvalidArgumentException::class,
     'Money attribute [price] must be null, Money, int, or string.',
 );
+
+it('prefers an explicit currency attribute over the conventional currency attribute', function (): void {
+    $product = new Product();
+
+    $product->setRawAttributes([
+        'price' => 12550,
+        'currency' => 'BDT',
+        'currency_code' => 'USD',
+    ]);
+
+    $product->mergeCasts([
+        'price' => MoneyCast::class.':currency_code',
+    ]);
+
+    expect($product->price->currency())->toBe(Currency::USD);
+});

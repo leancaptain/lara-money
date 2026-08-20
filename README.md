@@ -99,9 +99,19 @@ For a currency with two minor-unit decimal places:
 
 No floating-point representation is used for monetary storage or parsing.
 
+### Currency resolution
+
+`MoneyCast` resolves the currency for a money attribute using a three-layer strategy, checked in this order:
+
+1. **Explicit currency attribute** — A column name passed to the cast constructor.
+2. **Auto-detected `currency` column** — A column named `currency` on the model, used automatically.
+3. **Application default** — The default currency from `config('money.php')`.
+
+The first match wins. This means a model with a `currency` column will use it automatically without any explicit configuration.
+
 ### Using the default currency
 
-If your model does not need a currency column, use the cast directly:
+If your model does not have a `currency` column and does not need a per-record currency, use the cast directly:
 
 ```php
 use LeanCaptain\LaraMoney\Casts\MoneyCast;
@@ -120,7 +130,7 @@ If the database contains:
 amount = 12550
 ```
 
-and the configured currency is `BDT`, reading:
+and the configured currency is `USD`, reading:
 
 ```php
 $model->amount;
@@ -129,22 +139,22 @@ $model->amount;
 returns a `Money` representing:
 
 ```text
-BDT 125.50
+USD 125.50
 ```
 
 No currency column is required.
 
 This is useful for applications or models that operate in a single known currency.
 
-## Per-record currencies
+### Auto-detecting a currency column
 
-For multi-currency models, pass the currency attribute name to the cast:
+If your model has a column named `currency`, `MoneyCast` detects it automatically:
 
 ```php
 protected function casts(): array
 {
     return [
-        'amount' => MoneyCast::class.':currency',
+        'amount' => MoneyCast::class,
     ];
 }
 ```
@@ -153,12 +163,16 @@ Given:
 
 ```text
 amount   = 12550
-currency = USD
+currency = EUR
 ```
 
-the cast returns a `Money` using `Currency::USD`.
+the cast returns a `Money` using `Currency::EUR` without any explicit currency attribute configuration.
 
-The currency attribute name is configurable:
+This works because `MoneyCast` checks for the presence of a `currency` key in the model's attributes and uses it when no explicit attribute is specified.
+
+### Explicit currency attribute
+
+For multi-currency models where the column is not named `currency`, pass the attribute name to the cast:
 
 ```php
 protected function casts(): array
@@ -176,7 +190,26 @@ amount        = 12550
 currency_code = EUR
 ```
 
+the cast returns a `Money` using `Currency::EUR`.
+
 When a currency attribute is explicitly configured, it must contain a valid currency code. The cast does not silently fall back to the application's default currency when the explicit currency is missing or invalid.
+
+### Currency resolution flow
+
+```text
+MoneyCast constructor
+        │
+        ├── Explicit attribute provided? ── YES ──► Use that column
+        │                                              │
+        NO                                              │
+        │                                              ▼
+        ├── 'currency' key in attributes? ── YES ──► Use 'currency' column
+        │                                              │
+        NO                                              │
+        │                                              ▼
+        ▼                                    Resolve via CurrencyResolver
+Use app default currency                          (e.g. 'EUR' → Currency::EUR)
+```
 
 ## Assigning monetary values
 
@@ -355,14 +388,21 @@ This allows applications to define their own currency domain without requiring c
 The built-in currencies come from `leancaptain/money`:
 
 ```text
+AED
+AUD
 BDT
-USD
+CAD
+CNY
 EUR
 GBP
+INR
 JPY
+SAR
+SGD
+USD
 ```
 
-The built-in list is deliberately small.
+The built-in list is deliberately curated.
 
 Applications that need additional currencies can implement `CurrencyContract` rather than requiring the core package to maintain an exhaustive currency catalog.
 

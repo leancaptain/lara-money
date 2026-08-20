@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb4a0c36c637c3b6cd495298390744c4",
+    "content-hash": "3c68206a3d1d8b6dbf958c7ea3bc1790",
     "packages": [
         {
             "name": "brick/math",
@@ -1965,16 +1965,16 @@
         },
         {
             "name": "leancaptain/money",
-            "version": "v0.0.3",
+            "version": "v0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/leancaptain/money.git",
-                "reference": "67fb3facc7c88f5e68e301172f8b872b22f0a262"
+                "reference": "44e42c339cb924da097a9f324f060882ba50c36f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/leancaptain/money/zipball/67fb3facc7c88f5e68e301172f8b872b22f0a262",
-                "reference": "67fb3facc7c88f5e68e301172f8b872b22f0a262",
+                "url": "https://api.github.com/repos/leancaptain/money/zipball/44e42c339cb924da097a9f324f060882ba50c36f",
+                "reference": "44e42c339cb924da097a9f324f060882ba50c36f",
                 "shasum": ""
             },
             "require": {
@@ -2010,9 +2010,9 @@
             ],
             "support": {
                 "issues": "https://github.com/leancaptain/money/issues",
-                "source": "https://github.com/leancaptain/money/tree/v0.0.3"
+                "source": "https://github.com/leancaptain/money/tree/v0.0.4"
             },
-            "time": "2026-08-11T11:12:34+00:00"
+            "time": "2026-08-20T18:32:21+00:00"
         },
         {
             "name": "monolog/monolog",
